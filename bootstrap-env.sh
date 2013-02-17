@@ -250,6 +250,7 @@ function build_pyopencl
 
 function build_python_modules
 {
+    $PIP_EXE install readline
     # numpy and cython
     $PIP_EXE install numpy
     $PIP_EXE install cython
@@ -296,7 +297,6 @@ function main
         export PATH=$PY_PREFIX/bin:$PATH
     fi
 
-    info "[Active Python:" `which python` "]"
 
     check_llvm_install $DEST
     if [[ $? == 0 ]] ; then
@@ -313,6 +313,8 @@ function main
     fi
 
     build_python_modules
+
+    info "[Active Python:" `which python` "]"
 }
 
 main

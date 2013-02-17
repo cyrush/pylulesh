@@ -1,0 +1,7 @@
+*.pyc
+visitlog.py
+slurm-*.out
+*core
+libs/
+build/
+tests/__init__.py
