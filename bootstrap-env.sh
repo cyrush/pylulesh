@@ -254,6 +254,9 @@ function build_python_modules
     # numpy and cython
     $PIP_EXE install numpy
     $PIP_EXE install cython
+    # matplot lib & ipython
+    $PIP_EXE install matplotlib
+    $PIP_EXE install ipython
     # llvm & numba
     export LLVM_CONFIG_PATH=$LLVM_PREFIX/bin/llvm-config
     $PIP_EXE install git+https://github.com/llvmpy/llvmpy.git#egg=llvmpy
