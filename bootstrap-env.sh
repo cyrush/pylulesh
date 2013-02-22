@@ -255,8 +255,24 @@ function build_python_modules
     $PIP_EXE install numpy
     $PIP_EXE install cython
     # matplot lib & ipython
+    # avoid gcc & x11 issues on OSX 10.8
+    if [[ -e /mach_kernel ]] ; then
+        export CC=clang
+        export CXX=clang++
+        export LDFLAGS="-L/usr/X11/lib"
+        export CFLAGS="-I/usr/X11/include -I/usr/X11/include/freetype2"
+    fi;
     $PIP_EXE install matplotlib
+    if [[ -e /mach_kernel ]] ; then
+        unset CC
+        unset CXX
+        unset LDFLAGS
+        unsert CFLAGS
+    fi
+    $PIP_EXE install tornado
+    $PIP_EXE install pyzmq
     $PIP_EXE install ipython
+    $PIP_EXE install pandas
     # llvm & numba
     export LLVM_CONFIG_PATH=$LLVM_PREFIX/bin/llvm-config
     $PIP_EXE install git+https://github.com/llvmpy/llvmpy.git#egg=llvmpy

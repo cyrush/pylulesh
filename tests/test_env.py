@@ -23,6 +23,20 @@ def sum2d(arr):
 class TestEnv(unittest.TestCase):
     def setUp(self):
         pass
+    def test_matplotlib(self):
+        import numpy as np
+        import pylab
+        if os.path.isfile("mpl_test.png"):
+            os.remove("mpl_test.png")
+        fig = pylab.figure()
+        x = np.linspace(0,2*np.pi,100)
+        y = 2*np.sin(x)
+        ax = fig.add_subplot(1,1,1)
+        ax.plot(x,y)
+        pylab.savefig("mpl_test.png")
+        self.assertTrue(os.path.isfile("mpl_test.png"))
+        if os.path.isfile("mpl_test.png"):
+            os.remove("mpl_test.png")
     def test_h5py(self):
         # write an array to hdf5 file
         # read it back using another hdf5 handle.
