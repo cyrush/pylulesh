@@ -90,6 +90,25 @@ function check_hdf5_install
     fi
 }
 
+function check_osx_10_8
+{
+    $PY_EXE <<END
+import sys
+import platform
+osx_ml = False
+if sys.platform.count("darwin") > 0:
+    if platform.mac_ver()[0].count("10.8") > 0:
+        osx_ml = True
+
+if osx_ml:
+    sys.exit(0)
+else:
+    sys.exit(-1)
+
+END
+    return $?
+}
+
 function check_opencl_support
 {
     $PY_EXE <<END
@@ -277,14 +296,14 @@ function build_python_modules
     $PIP_EXE install cython
     # matplot lib & ipython
     # avoid gcc & x11 issues on OSX 10.8
-    if [[ -e /mach_kernel ]] ; then
+    if check_osx_10_8 ; then
         export CC=clang
         export CXX=clang++
         export LDFLAGS="-L/usr/X11/lib"
         export CFLAGS="-I/usr/X11/include -I/usr/X11/include/freetype2"
     fi;
     $PIP_EXE install matplotlib
-    if [[ -e /mach_kernel ]] ; then
+    if check_osx_10_8 ; then
         unset CC
         unset CXX
         unset LDFLAGS
