@@ -90,6 +90,27 @@ function check_hdf5_install
     fi
 }
 
+function check_opencl_support
+{
+    $PY_EXE <<END
+import sys
+import os
+cl_support = False
+if sys.platform.count("darwin") > 0:
+    cl_support = True
+else:
+    cl_support = os.path.isdir("/opt/cudatoolkit-5.0/")
+
+if cl_support:
+    sys.exit(0)
+else:
+    sys.exit(-1)
+
+END
+    return $?
+}
+
+
 function check_pyopencl_install
 {
     $PY_EXE <<END
@@ -282,17 +303,23 @@ function build_python_modules
     # h5py
     export HDF5_DIR=$HDF5_PREFIX
     $PIP_EXE install h5py
-    # pyopencl
-    $PIP_EXE install py
-    $PIP_EXE install pytest
-    $PIP_EXE install pytools
-    $PIP_EXE install decorator
-    $PIP_EXE install mako
-    check_pyopencl_install
+    # check if machine has OpenCL support
+    check_opencl_support
     if [[ $? == 0 ]] ; then
-        info "[Found: pyopencl <Skipping build>]"
+        # pyopencl
+        $PIP_EXE install py
+        $PIP_EXE install pytest
+        $PIP_EXE install pytools
+        $PIP_EXE install decorator
+        $PIP_EXE install mako
+        check_pyopencl_install
+        if [[ $? == 0 ]] ; then
+            info "[Found: pyopencl <Skipping build>]"
+        else
+            build_pyopencl
+        fi
     else
-        build_pyopencl
+        info "[WARNING: skipping pyopencl, no OpenCL support]"
     fi
 }
 

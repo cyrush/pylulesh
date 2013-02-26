@@ -63,9 +63,13 @@ class TestEnv(unittest.TestCase):
         r = numba_sum2d(vals)
         self.assertEqual(r,100.0)
     def test_pyopencl(self):
-        # test simple pyopencl kernel 
+        try:
+            import pyopencl as cl
+        except:
+            print "\n[WARNING: pyopencl is not installed - skipping opencl env test]"
+            return
+        # test simple pyopencl kernel
         # on this first dev in the first platform
-        import pyopencl as cl
         import numpy as np
         import numpy.linalg as la
         a = np.ones(shape=(1,1),dtype=np.float64)
@@ -94,6 +98,7 @@ class TestEnv(unittest.TestCase):
         b_buf = cl.Buffer(ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=b)
         dest_buf = cl.Buffer(ctx, mf.WRITE_ONLY, b.nbytes)
         prg = cl.Program(ctx, """
+            #pragma OPENCL EXTENSION cl_khr_fp64: enable
             __kernel void sum(__global const double *a,
             __global const double *b, __global double *c)
             {
