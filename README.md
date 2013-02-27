@@ -17,3 +17,12 @@ Run tests to double check the env setup:
 <pre>
 python setup.py test --filter=test_env
 </pre>
+
+
+IPython Notebook Example
+---------------
+To launch the example notebook in a web browser, run the following:
+<pre>
+cd notebooks
+./launch.sh
+</pre>
