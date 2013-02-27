@@ -9,7 +9,7 @@
 
 import unittest
 import os
-import shutil
+import glob
 
 from os.path import join as pjoin
 
@@ -23,16 +23,17 @@ def check_remove(fname):
 
 def prep_output_dir():
     odir = pjoin("tests","_output")
-    if os.path.isdir(odir):
-        shutil.rmtree(odir)
-    os.mkdir(odir)
-
+    if not os.path.isdir(odir):
+        os.mkdir(odir)
+    # clean out existing files
+    for f in glob.glob(pjoin(odir,"*")):
+        os.remove(f)
 
 class TestMesh(unittest.TestCase):
     def setUp(self):
         pass
     def test_mesh_01_default(self):
-        #prep_output_dir()
+        prep_output_dir()
         m = Mesh.default()
         print m
     def test_mesh_02_xdmf_hdf5(self):
