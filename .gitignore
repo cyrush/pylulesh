@@ -5,3 +5,4 @@ slurm-*.out
 libs/
 build/
 tests/__init__.py
+tests/_output

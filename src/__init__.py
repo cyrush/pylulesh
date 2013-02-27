@@ -6,3 +6,5 @@
     Init for 'pylulesh'.
 
 """
+
+from mesh import Mesh
