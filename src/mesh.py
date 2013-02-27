@@ -48,6 +48,7 @@ class Mesh(object):
         self.cycle = cycle
         self.element_vars = dict_type()
         self.nodal_vars   = dict_type()
+        self.__init_topo()
         if not element_vars is None:
             for ev in element_vars:
                 self.add_element_var(ev)
@@ -58,6 +59,40 @@ class Mesh(object):
         self.element_vars[name] = alloc_ndarray([self.num_elements,ncomps],np.float64)
     def add_nodal_var(self,name,ncomps=1):
         self.nodal_vars[name]   = alloc_ndarray([self.num_nodes,ncomps],np.float64)
+    def __init_topo(self):
+        tz = 0.0
+        ty = 0.0
+        tx = 0.0
+        nidx = 0
+        nodes_x, nodes_y, nodes_z  = self.nodal_dims
+        elems_x, elems_y, elems_z  = self.element_dims
+        for k in xrange(nodes_z):
+            tz =  (1.125 * float(k)) / float(elems_z)
+            for j in xrange(nodes_y):
+                ty = (1.125 * float(j)) / float(elems_y)
+                for i in xrange(nodes_x):
+                    tx = (1.125 * float(i)) / float(elems_x)
+                    self.xyz[nidx,0] = tx
+                    self.xyz[nidx,1] = ty
+                    self.xyz[nidx,2] = tz
+                    nidx+=1
+        nidx = 0
+        zidx = 0
+        for k in xrange(elems_z):
+            for j in xrange(elems_y):
+                for i in xrange(elems_x):
+                    self.conn[zidx,0] = nidx
+                    self.conn[zidx,1] = nidx                     + 1
+                    self.conn[zidx,2] = nidx                     +  nodes_x + 1
+                    self.conn[zidx,3] = nidx                     +  nodes_x
+                    self.conn[zidx,4] = nidx + nodes_x * nodes_y
+                    self.conn[zidx,5] = nidx + nodes_x * nodes_y + 1
+                    self.conn[zidx,6] = nidx + nodes_x * nodes_y + nodes_z +  1
+                    self.conn[zidx,7] = nidx + nodes_x * nodes_y + nodes_z
+                    zidx+=1
+                    nidx+=1
+                nidx+=1
+            nidx+= nodes_x
     def __repr__(self):
         return str(self)
     def __str__(self):

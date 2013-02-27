@@ -9,36 +9,40 @@
 
 import h5py
 import numpy as np
+import os
 
 
 def ident(n):
     return "".join(["    " for i in range(n)])
 
 def xdmf_data_item(ofile,mesh,data,name,inline):
-    if inline:
-        xdmf_inline_data_item(ofile,data,name)
-    else:
-        xdmf_hdf5_data_item(ofile,mesh,data,name)
-    
-def xdmf_inline_data_item(ofile,data,name):
-    pass
-
-def xdmf_hdf5_data_item(ofile,mesh,data,name):
+    fmt   = "%.18e"
     ditem = '<DataItem '
     if data.shape[1] == 1:
-        ditem += ' Dimensions="%d %d" ' % data.shape
-    else:
         ditem += 'Dimensions="%d" ' % data.shape[0]
+    else:
+        ditem += ' Dimensions="%d %d" ' % data.shape
     if data.dtype == np.float64:
         ditem += ' NumberType="Float" Precision="8" '
     elif data.dtype == np.float32:
         ditem += ' NumberType="Float" Precision="4" '
     else:
+        fmt    = "%d"
         ditem += ' NumberType="Int" '
-    ditem += 'Format="HDF">'
     ofile.write(ditem)
-    ofile.write(" %s.h5/%s " % (mesh.output_base(), name))
+    if inline:
+        ofile.write('Format="XML">\n')
+        np.savetxt(ofile,data,fmt=fmt)
+    else:
+        ofile.write('Format="HDF">')
+        h5_file = os.path.split(mesh.output_base() + ".h5")[1]
+        ofile.write(" %s:/%s " % (h5_file, name))
     ofile.write('</DataItem>\n')
+
+def xdmf_conn_array(mesh_conn):
+    etypes    = np.zeros(shape=(mesh_conn.shape[0],1),dtype=mesh_conn.dtype)
+    etypes[:] = 9
+    return np.hstack((etypes,mesh_conn))
 
 def xdmf_mixed_topo(ofile,mesh,inline):
     ofile.write(ident(2) + '<Geometry Type="XYZ">\n')
@@ -47,7 +51,8 @@ def xdmf_mixed_topo(ofile,mesh,inline):
     ofile.write(ident(2) + '</Geometry>\n')
     ofile.write(ident(2) + '<Topology Type="Mixed" NumberOfElements="%d" >\n' % mesh.num_elements)
     ofile.write(ident(3))
-    xdmf_data_item(ofile,mesh,mesh.conn, "conn",inline)
+    conn = xdmf_conn_array(mesh.conn)
+    xdmf_data_item(ofile,mesh,conn, "conn",inline)
     ofile.write(ident(2) + '</Topology>\n')
 
 def write_xdmf_root(mesh,inline):
@@ -81,7 +86,7 @@ def write_xdmf_root(mesh,inline):
 def write_xdmf_h5(mesh):
     h5_out = h5py.File(mesh.output_base() + '.h5', 'w')
     h5_out["xyz"]   = mesh.xyz
-    h5_out["conn"]  = mesh.conn
+    h5_out["conn"]  = xdmf_conn_array(mesh.conn)
     for k,v in mesh.element_vars.items():
         h5_out[k] = v
     for k,v in mesh.nodal_vars.items():
