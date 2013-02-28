@@ -155,7 +155,7 @@ def element_volume_numba(x,y,z,conn,x_loc,y_loc,z_loc,v):
             x_loc[j] =  x[conn[i,j]]
             y_loc[j] =  y[conn[i,j]]
             z_loc[j] =  z[conn[i,j]]
-    v[i] = calc_elem_volume_numpy(x_loc,y_loc,z_loc)
+        v[i] = calc_elem_volume_numpy(x_loc,y_loc,z_loc)
 
 def element_volume_driver(mesh):
     x_ele = np.zeros(shape=(8,),dtype=np.float64)
