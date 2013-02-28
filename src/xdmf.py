@@ -72,7 +72,7 @@ def write_xdmf_root(mesh,inline):
         ofile.write(ident(3))
         xdmf_data_item(ofile,mesh,v,k,inline)
         ofile.write(ident(2) + '</Attribute>\n')
-    for k,v in mesh.nodal_vars.items():
+    for k,v in mesh.node_vars.items():
         ofile.write(ident(2) + '<Attribute Name="%s" AttributeType="Scalar" Center="Node">\n' % k)
         ofile.write(ident(3))
         xdmf_data_item(ofile,mesh,v,k,inline)
@@ -89,7 +89,7 @@ def write_xdmf_h5(mesh):
     h5_out["conn"]  = xdmf_conn_array(mesh.conn)
     for k,v in mesh.element_vars.items():
         h5_out[k] = v
-    for k,v in mesh.nodal_vars.items():
+    for k,v in mesh.node_vars.items():
         h5_out[k] = v
     h5_out.close()
 
