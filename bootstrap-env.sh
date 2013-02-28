@@ -90,6 +90,20 @@ function check_hdf5_install
     fi
 }
 
+function check_osx
+{
+    $PY_EXE <<END
+import sys
+import platform
+if sys.platform.count("darwin") > 0:
+    sys.exit(0)
+else:
+    sys.exit(-1)
+
+END
+    return $?
+}
+
 function check_osx_10_8
 {
     $PY_EXE <<END
@@ -290,7 +304,10 @@ function build_pyopencl
 
 function build_python_modules
 {
-    $PIP_EXE install readline
+    # only install readline on osx
+    if check_osx; then
+        $PIP_EXE install readline
+    fi;
     # numpy and cython
     $PIP_EXE install numpy
     $PIP_EXE install cython
