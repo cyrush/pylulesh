@@ -52,6 +52,12 @@ class TestMesh(unittest.TestCase):
         xmf_file = m.output_fname(ext="xmf")
         m.save(inline=True)
         self.assertTrue(os.path.isfile(xmf_file))
+    def test_mesh_04_x_y_z(self):
+        m = Mesh.default()
+        self.assertTrue(m.x.shape[0] == m.xyz.shape[0])
+        self.assertTrue(m.y.shape[0] == m.xyz.shape[0])
+        self.assertTrue(m.y.shape[0] == m.xyz.shape[0])
+
 
 
 if __name__ == '__main__':

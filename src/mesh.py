@@ -43,6 +43,9 @@ class Mesh(object):
         self.num_elements = element_dims[0] * element_dims[1] * element_dims[2]
         self.num_nodes    = self.node_dims[0] * self.node_dims[1] * self.node_dims[2]
         self.xyz   = alloc_ndarray([self.num_nodes,3],np.float64)
+        self.x     = alloc_ndarray([self.num_nodes,1],np.float64)
+        self.y     = alloc_ndarray([self.num_nodes,1],np.float64)
+        self.z     = alloc_ndarray([self.num_nodes,1],np.float64)
         self.conn  = alloc_ndarray([self.num_elements,8],np.int32)
         self.obase = obase
         self.cycle = cycle
@@ -76,6 +79,9 @@ class Mesh(object):
                     self.xyz[nidx,1] = ty
                     self.xyz[nidx,2] = tz
                     nidx+=1
+        self.x = self.xyz[:,0]
+        self.y = self.xyz[:,1]
+        self.z = self.xyz[:,2]
         nidx = 0
         zidx = 0
         for k in xrange(elems_z):
