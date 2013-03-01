@@ -47,6 +47,7 @@ def SumElemFaceNormal(pfx,pfy,pfz,
 
 
 # B should be 2 dim array, second of dim 8
+
 def SumElemStressesToNodeForces(B, 
                                 stress_xx,
                                 stress_yy,

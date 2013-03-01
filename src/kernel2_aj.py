@@ -12,7 +12,7 @@ from pylulesh import mesh
 from mesh import alloc_ndarray
 from numba import autojit, double, jit, int32
 
-@autojit#(locals=dict(bisectX0=double,
+#(locals=dict(bisectX0=double,
         #             bisectY0=double,
         #             bisectZ0=double,
         #             bisectX1=double,
@@ -21,23 +21,23 @@ from numba import autojit, double, jit, int32
         #             areaX = double,
         #             areaY = double, 
         #             areaZ = double))
+@autojit
 def SumElemFaceNormal(pfx,pfy,pfz,
-                      x,y,z,
-                      i0,i1,i2,i3):
-#                      x0,  y0,  z0,
-#                      x1,  y1,  z1,
-#                      x2,  y2,  z2,
-#                      x3,  y3,  z3) : 
+                      i0,i1,i2,i3,
+                      x0,  y0,  z0,
+                      x1,  y1,  z1,
+                      x2,  y2,  z2,
+                      x3,  y3,  z3) : 
     
     
 #    bisect0 = 0.5 * (xyz[i3] + xyz[i2] - xyz[i1] - xyz[i0])
 #    bisect1 = 0.5 * (xyz[i2] + xyz[i1] - xyz[i3]- xyz[i0])
-    bisectX0 = 0.5 * (x[i3] + x[i2] - x[i1] - x[i0]);
-    bisectY0 = 0.5 * (y[i3] + y[i2] - y[i1] - y[i0]);
-    bisectZ0 = 0.5 * (z[i3] + z[i2] - z[i1] - z[i0]);
-    bisectX1 = 0.5 * (x[i2] + x[i1] - x[i3] - x[i0]);
-    bisectY1 = 0.5 * (y[i2] + y[i1] - y[i3] - y[i0]);
-    bisectZ1 = 0.5 * (z[i2] + z[i1] - z[i3] - z[i0]);
+    bisectX0 = 0.5 * (x3+ x2- x1- x0);
+    bisectY0 = 0.5 * (y3+ y2- y1- y0);
+    bisectZ0 = 0.5 * (z3+ z2- z1- z0);
+    bisectX1 = 0.5 * (x2+ x1- x3- x0);
+    bisectY1 = 0.5 * (y2+ y1- y3- y0);
+    bisectZ1 = 0.5 * (z2+ z1- z3- z0);
 
     areaX = 0.25 * (bisectY0 * bisectZ1 - bisectZ0 * bisectY1);
     areaY = 0.25 * (bisectZ0 * bisectX1 - bisectX0 * bisectZ1);
@@ -87,31 +87,56 @@ def  CalcElemNodeNormals( pfx, pfy, pfz, x , y, z):
     pfz *= 0
    
     # evaluate face one: nodes 0, 1, 2, 3  
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      0,1,2,3)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      0,1,2,3,
+                      x[0], y[0], z[0], 
+                      x[1], y[1], z[1], 
+                      x[2], y[2], z[2], 
+                      x[3], y[3], z[3])
+
 
    # evaluate face two: nodes 0, 4, 5, 1 
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      0,4,5,1)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      0,4,5,1, 
+                      x[0], y[0], z[0], 
+                      x[4], y[4], z[4], 
+                      x[5], y[5], z[5], 
+                      x[1], y[1], z[1])
 
 
 
    # evaluate face three: nodes 1, 5, 6, 2 
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      1,5,6,2)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      1,5,6,2, 
+                      x[1], y[1], z[1], 
+                      x[5], y[5], z[5], 
+                      x[6], y[6], z[6], 
+                      x[2], y[2], z[2])
 
 
    #evaluate face four: nodes 2, 6, 7, 3 
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      2,6,7,3)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      2,6,7,3, 
+                      x[2], y[2], z[2], 
+                      x[6], y[6], z[6], 
+                      x[7], y[7], z[7], 
+                      x[3], y[3], z[3])
 
    #evaluate face five: nodes 3, 7, 4, 0 
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      3,7,4,0)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      3,7,4,0, 
+                      x[3], y[3], z[3], 
+                      x[7], y[7], z[7], 
+                      x[4], y[4], z[4], 
+                      x[0], y[0], z[0])
 
    # evaluate face six: nodes 4, 7, 6, 5 
-    SumElemFaceNormal(pfx,pfy,pfz,x,y,z,
-                      4,7,6,5)
+    SumElemFaceNormal(pfx,pfy,pfz,
+                      4,7,6,5, 
+                      x[4], y[4], z[4], 
+                      x[7], y[7], z[7], 
+                      x[6], y[6], z[6], 
+                      x[5], y[5], z[5])
 
 
 
