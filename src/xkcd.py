@@ -60,7 +60,7 @@ def xkcd_plot (x,ys,jiggleScale=.1,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,y
     for i  in range(len(ys)): 
         # lay down a white line first to create overlap effect
 #        ax.plot(x[xmin:xmax], ys[i][ymin:ymax], 'white', lw=7)
-        ax.plot(x[xmin:xmax], ys[i][ymin:ymax]+verticaloffset, colors[i], lw=2)
+        ax.plot(x[xmin:xmax], ys[i][ymin:ymax]+verticaloffset, colors[i%len(colors)], lw=2)
 
 
     ax.set_xlim(x[0]*.9,x[-1]*1.2)
