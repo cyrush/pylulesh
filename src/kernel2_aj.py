@@ -21,7 +21,14 @@ from numba import autojit, double, jit, int32
         #             areaX = double,
         #             areaY = double, 
         #             areaZ = double))
-@autojit
+nd1type = double[:]
+
+@jit(argtypes=(nd1type,nd1type,nd1type,
+               int32,int32,int32,int32,
+               double,double,double,
+               double,double,double,
+               double,double,double,
+               double,double,double))
 def SumElemFaceNormal(pfx,pfy,pfz,
                       i0,i1,i2,i3,
                       x0,  y0,  z0,
@@ -79,7 +86,7 @@ def SumElemStressesToNodeForces(B,
     fz[0:8,0] = -stress_zz * B[2]
 
 
-@autojit
+@jit(argtypes=(nd1type,nd1type,nd1type,nd1type,nd1type,nd1type))
 def  CalcElemNodeNormals( pfx, pfy, pfz, x , y, z): 
 
     pfx *= 0
