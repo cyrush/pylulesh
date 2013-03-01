@@ -16,7 +16,7 @@ def run_pypy(dim):
 """
 
 results = {}
-testname = 'python_kernel1'
+testname = 'python_kernel2'
 res = {}
 for dim in sys.argv[1:]:
     t = timeit.Timer("run_python(%s)"%dim, python_setup)
