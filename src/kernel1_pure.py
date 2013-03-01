@@ -1,6 +1,6 @@
 
 def triple_product(x1, y1, z1, x2, y2, z2, x3, y3, z3):
-    return (x1)*((y2)*(z3) - (z2)*(y3)) + (x2)*((z1)*(y3) - (y1)*(z3)) + (x3)*((y1)*(z2) - (z1)*(y2))
+    return x1*(y2*z3 - z2*y3) + x2*(z1*y3 - y1*z3) + x3*(y1*z2 - z1*y2)
 
 def calc_elem_volume(x,y,z):  
         twelveth = (1.0)/(12.0);
