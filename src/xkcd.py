@@ -31,14 +31,20 @@ def xkcd_plot_sample():
     xkcd_plot(x,[y1,y2])
  
 def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png"): 
-
-
+    nx = np.linspace(x[0], x[-1], num=257, endpoint=True)
+    #xmin = 0# x[0] - x[0] * .1
+    #xmax = x[-1] + x[-1] * .1
+    ylim_max = 3
     # Add the jiggles
     scale = jiggleScale
+    yn = []
     for y in ys: 
-        y += rand_func() * scale
-        y += rand_func() * scale
- 
+        yy = np.interp(nx,x,y)
+        yy += rand_func() * scale
+        yy += rand_func() * scale
+        yn.append(yy)
+    ys = yn
+    x =nx
     # Set up a figure
     fig = Figure()
     canvas = fc(fig)
@@ -57,8 +63,8 @@ def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,yl
     # Poor man's x-axis. There's probably a better way of doing this.
     xaxis = [0.0] * 257
     xaxis += rand_func() * jiggleScale/2.5
-    ax.plot(x[3:-3], xaxis[3:-3], 'k', lw=2)
-    ax.arrow(8.75, xaxis[-3], 0.1, 0, fc='k', head_width=0.2, head_length=0.15)
+    #ax.plot(x[3:-3], xaxis[3:-3], 'k', lw=2)
+    #ax.arrow(8.75, xaxis[-3], 0.1, 0, fc='k', head_width=0.2, head_length=0.15)
  
     # Poor man's x-ticks
     for x in xticks: 
@@ -77,6 +83,7 @@ def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,yl
     ax.set_xticklabels([])
     ax.set_yticklabels([])
     ax.set_frame_on(False)
+    return fig
  
 # Turn off all clipping
     def noclip(ax): 
