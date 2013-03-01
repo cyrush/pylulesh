@@ -34,7 +34,7 @@ class TestMesh(unittest.TestCase):
         pass
     def test_kernel_1(self):
         m = Mesh.default([5,5,5],obase="kernel1_%04d")
-        kernel1.element_volume_driver(m)
+        kernel1.element_volume_driver_numpy(m)
         m.save()
 
 if __name__ == '__main__':

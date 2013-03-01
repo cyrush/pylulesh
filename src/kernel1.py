@@ -77,10 +77,17 @@ def element_volume(x,y,z,conn,x_loc,y_loc,z_loc,v):
             z_loc[j] =  z[conn[i,j]]
         v[i] = calc_elem_volume(x_loc,y_loc,z_loc)
 
-def element_volume_driver(mesh):
+def element_volume_driver_numpy(mesh):
     x_ele = np.zeros(shape=(8,),dtype=np.float64)
     y_ele = np.zeros(shape=(8,),dtype=np.float64)
     z_ele = np.zeros(shape=(8,),dtype=np.float64)
+    element_volume(mesh.x,mesh.y,mesh.z,mesh.conn,
+                         x_ele,y_ele,z_ele,mesh.element_vars["v"])
+
+def element_volume_driver_py(mesh):
+    x_ele = [0]*8
+    y_ele = [0]*8
+    z_ele = [0]*8
     element_volume(mesh.x,mesh.y,mesh.z,mesh.conn,
                          x_ele,y_ele,z_ele,mesh.element_vars["v"])
 
