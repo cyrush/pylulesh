@@ -57,6 +57,10 @@ class TestMesh(unittest.TestCase):
         self.assertTrue(m.x.shape[0] == m.xyz.shape[0])
         self.assertTrue(m.y.shape[0] == m.xyz.shape[0])
         self.assertTrue(m.y.shape[0] == m.xyz.shape[0])
+    def test_mesh_05_pure(self):
+        m = Mesh.default(float_type="double",int_type="int")
+        self.assertTrue(isinstance(m.x,list))
+
 
 
 

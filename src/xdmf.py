@@ -7,8 +7,12 @@
 
 """
 
-import h5py
-import numpy as np
+try:
+    import h5py
+    import numpy as np
+except:
+    pass
+
 import os
 
 

@@ -33,12 +33,12 @@ class TestMesh(unittest.TestCase):
     def setUp(self):
         pass
     def test_kernel_2(self):
-        m = Mesh.default(obase="kernel2_%04d")
+        m = Mesh.default([5,5,5],obase="kernel2_%04d")
         # put values in the dxx, dyy, dzz fields to make something happen
-        m.element_vars["dxx"]= np.random.random_sample(m.num_elements)
-        m.element_vars["dyy"]= np.random.random_sample(m.num_elements)
-        m.element_vars["dzz"]= np.random.random_sample(m.num_elements)
-        kernel2.Kernel2(m)
+        m.element_vars["dxx"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
+        m.element_vars["dyy"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
+        m.element_vars["dzz"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
+        #kernel2.Kernel2(m)
         m.save()
 
 if __name__ == '__main__':
