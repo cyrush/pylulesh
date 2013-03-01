@@ -42,7 +42,7 @@ class TestMesh(unittest.TestCase):
         m.save()
     def test_kernel1_03_numba(self):
         m = Mesh.default([5,5,5],obase="kernel1_numba_%04d")
-        kernel1_numba.element_volume(m)
+        kernel1_numba_2.element_volume(m)
         m.save()
 
 

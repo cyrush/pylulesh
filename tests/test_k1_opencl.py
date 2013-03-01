@@ -8,14 +8,22 @@
 
 import unittest
 from pylulesh import *
+using_pyocl = False
+try:
+    import pyopencl
+    using_pyocl = True
+except:
+    pass
+
 
 class TestEnv(unittest.TestCase):
     def setUp(self):
         pass
     def test_pyopencl(self):
-        mesh = Mesh.default(obase="kernel1_ocl_%04d")
-        kernel1_opencl.element_volume(mesh)
-        mesh.save()
+        if using_pyocl:
+            mesh = Mesh.default(obase="kernel1_ocl_%04d")
+            kernel1_opencl.element_volume(mesh)
+            mesh.save()
         
 if __name__ == '__main__':
     unittest.main()
