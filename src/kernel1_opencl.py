@@ -1,5 +1,8 @@
-import pyopencl as cl
-import numpy as np
+try:
+    import pyopencl as cl
+    import numpy as np
+except:
+    pass
 
 def element_volume(mesh):
     plat_id = 0
