@@ -10,6 +10,11 @@ import kernel1_numpy_2
 import kernel1_numba
 import kernel1_numba_2
 import kernel1_opencl
+
+import kernel2_pure
+import kernel2_numpy
+import kernel2_numba
+
 from xkcd import *
 
 
@@ -37,6 +42,23 @@ def run_test(m,tag,kname,kernel,res):
     msetup += 'float_type="%s",int_type="%s")\n' % (m.float_type,m.int_type)
     msetup += 'import pylulesh.kernel1_%s as kernel\n' % tag
     t = timeit.Timer("kernel.element_volume(m)",msetup)
+    t_res = t.timeit(5) / 5.0
+    res[tag][edge] = t_res
+
+def run_test2(m,tag,kname,kernel,res):
+    #wt = WallTimer("%s_%s_%d" % (kname,tag,edge))
+    #wt.start()
+    kernel.Kernel2(m)
+    print np.sum(m.element_vars["v"])
+    #wt.stop()
+    #t_res = wt.get_elapsed()
+    #print kernel
+    edge = m.element_dims[0]
+    msetup  = "import pylulesh\n"
+    msetup += 'm = pylulesh.Mesh.default([%d,%d,%d],'  % (m.element_dims[0],m.element_dims[1],m.element_dims[2])
+    msetup += 'float_type="%s",int_type="%s")\n' % (m.float_type,m.int_type)
+    msetup += 'import pylulesh.kernel2_%s as kernel\n' % tag
+    t = timeit.Timer("kernel.Kernel2(m)",msetup)
     t_res = t.timeit(5) / 5.0
     res[tag][edge] = t_res
 
@@ -92,3 +114,17 @@ def run_kernel1():
         run_ocl_test(m_ocl,"ocl_p_0","k1",kernel1_opencl,0,res)
         json.dump(res,open("k1_timing_results.json","w"))
     return plot_results(res,"k1_timing_results.png")
+
+def run_kernel2():
+    res = {"pure":{},"numpy":{},"numba":{},"xs":[2,8,16]}
+    for edge in res["xs"]:
+        m_pure  = mesh.Mesh.default([edge,edge,edge],
+                                     float_type="double",
+                                     int_type="int")
+        m_numpy = mesh.Mesh.default([edge,edge,edge])
+        m_numba = mesh.Mesh.default([edge,edge,edge])
+        run_test2(m_pure,"pure","k2",kernel2_pure,res)
+        run_test2(m_numpy,"numpy","k2",kernel2_numpy,res)
+        run_test2(m_numba,"numba","k2",kernel2_numba,res)
+        json.dump(res,open("k2_timing_results.json","w"))
+    return plot_results(res,"k2_timing_results.png")

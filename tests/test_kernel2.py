@@ -41,11 +41,11 @@ class TestMesh(unittest.TestCase):
         m.element_vars["dyy"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
         m.element_vars["dzz"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
         t0  = time()
-        kernel2.Kernel2(m)
+        kernel2_numpy.Kernel2(m)
         t1 = time()        
-        kernel2_aj.Kernel2(m)
+        kernel2_numba.Kernel2(m)
         t2 = time()
-        kernel2_aj.Kernel2(m)
+        kernel2_numba.Kernel2(m)
         t3 = time()
         print 'numpy time', t1 - t0        
         print 'autojit with compile ', t2 - t1
