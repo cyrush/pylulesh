@@ -30,7 +30,8 @@ def xkcd_plot_sample():
     y2 = 3.0 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 7.0) * (x - 7.0))
     xkcd_plot(x,[y1,y2],xmin=5,xmax=-5,ymin=5,ymax=-5)
  
-def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png",useLabels=False): 
+def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png",useLabels=False,
+the_labs=None): 
     xticks = []
     for xt in x: 
 #        print 'tick locations' ,xt
@@ -66,10 +67,12 @@ def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,yl
     ax = fig.add_subplot(1, 1, 1)
     colors = ['c','r','g','b','y']
     verticaloffset = .003
+    plts = []
     for i  in range(len(ys)): 
         # lay down a white line first to create overlap effect
 #        ax.plot(x[xmin:xmax], ys[i][ymin:ymax], 'white', lw=7)
-        ax.plot(x[xmin:xmax], ys[i][ymin:ymax]+verticaloffset, colors[i%len(colors)], lw=2)
+        pzzz, = ax.plot(x[xmin:xmax], ys[i][ymin:ymax]+verticaloffset, colors[i%len(colors)], lw=2)
+        plts.append(pzzz)
 
 
     
@@ -77,14 +80,14 @@ def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,yl
     # Poor man's x-axis. There's probably a better way of doing this.
 #    xaxis = nx
     xaxis = [ylim_min] * 257
-    if not useLables:
+    if not useLabels:
         xaxis += rand_func() * scale/2.5-(ylim_max-ylim_min)*.02
 #    print "axis endpoints", x[0], x[-1], xaxis[0], xaxis[-1]
     xxaxis = ((x[0:-1]-x[0]-2)*1.1+(x[0]+1.5)*1.1)
 
 
-
-
+    if useLabels:
+        ax.legend(plts, the_labs,loc='upper left')
     ax.set_ylim(np.min(xaxis)*4, ylim_max*1.1)
  
     # Poor man's x-ticks

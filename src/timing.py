@@ -19,8 +19,11 @@ from xkcd import *
 
 
 def run_ocl_test(m,tag,kname,kernel,plat_id,res):
+    info = 'Mesh dims: (%d,%d,%d) kernel: %s '  % (m.element_dims[0],m.element_dims[1],m.element_dims[2],tag)
+    print info,
     kernel.element_volume(m,plat_id)
-    print np.sum(m.element_vars["v"])
+    total_vol = np.sum(m.element_vars["v"])
+    print "total_volume: %f" % total_vol
     edge = m.element_dims[0]
     t_sum = 0
     for i in range(5):
@@ -31,8 +34,11 @@ def run_ocl_test(m,tag,kname,kernel,plat_id,res):
 def run_test(m,tag,kname,kernel,res):
     #wt = WallTimer("%s_%s_%d" % (kname,tag,edge))
     #wt.start()
+    info = 'Mesh dims: (%d,%d,%d) kernel: %s '  % (m.element_dims[0],m.element_dims[1],m.element_dims[2],tag)
+    print info,
     kernel.element_volume(m)
-    print np.sum(m.element_vars["v"])
+    total_vol = np.sum(m.element_vars["v"])
+    print "total_volume: %f" % total_vol
     #wt.stop()
     #t_res = wt.get_elapsed()
     #print kernel
@@ -76,7 +82,33 @@ class WallTimer(object):
     def __str__(self):
         return "%s %s (s)" % (self.tag,repr(self.get_elapsed()))
 
-def plot_results(res,ofile):
+def plot_results(res,ofile,normal=False,exclude=[]):
+    xs = res["xs"]
+    xs.sort()
+    #fig = pylab.figure()
+    #ax = fig.add_subplot(1, 1, 1)
+    ys = []
+    labs = []
+    for k in res.keys():
+        if k == "xs":
+            continue
+        if k in exclude:
+            continue
+        labs.append(k)
+        r    = np.zeros(shape=(len(xs),),dtype=np.float64) 
+        r[:] =[ res[k][x] for x in xs ]
+        ys.append(r)
+        #ax.plot(xs, ys,label=k)
+    #handles, labels = ax.get_legend_handles_labels()
+    #ax.legend(handles, labels)
+    #fig.savefig(ofile)
+    #print xs,ys
+    fig = xkcd_plot(xs,ys,useLabels=normal,the_labs=labs)
+    fig.savefig(ofile)
+    return fig
+
+def plot_results_json(res_json,ofile,normal=False,exclude=[]):
+    res = json.load(open(res_json))
     xs = res["xs"]
     xs.sort()
     #fig = pylab.figure()
@@ -85,6 +117,8 @@ def plot_results(res,ofile):
     for k in res.keys():
         if k == "xs":
             continue
+        if k in exclude:
+            continue
         r    = np.zeros(shape=(len(xs),),dtype=np.float64) 
         r[:] =[ res[k][x] for x in xs ]
         ys.append(r)
@@ -92,10 +126,11 @@ def plot_results(res,ofile):
     #handles, labels = ax.get_legend_handles_labels()
     #ax.legend(handles, labels)
     #fig.savefig(ofile)
-    print xs,ys
-    fig = xkcd_plot(xs,ys)
+    #print xs,ys
+    fig = xkcd_plot(xs,ys,useLabels=normal)
     fig.savefig(ofile)
     return fig
+
 
 def add_external_data(res, filename):
     try:
@@ -104,11 +139,10 @@ def add_external_data(res, filename):
        fio.close()
        newdict = eval(data)
        res.update(newdict)
-       print res
     except:
        pass
 
-def run_kernel1():
+def run_kernel1(normal=False,exclude=[]):
     res = {"pure":{},"numpy":{},"numpy_2":{},"numba":{},"numba_2":{},"ocl_p_0":{},"xs":[2,8,16]}
     for edge in res["xs"]:
         m_pure  = mesh.Mesh.default([edge,edge,edge],
@@ -125,7 +159,7 @@ def run_kernel1():
         run_ocl_test(m_ocl,"ocl_p_0","k1",kernel1_opencl,0,res)
         add_external_data(res, "pypy_kernel1_timing_results.json")
         json.dump(res,open("k1_timing_results.json","w"))
-    return plot_results(res,"k1_timing_results.png")
+    return plot_results(res,"k1_timing_results.png",normal=normal,exclude=exclude)
 
 def run_kernel2():
     res = {"pure":{},"numpy":{},"numba":{},"xs":[2,8,16]}

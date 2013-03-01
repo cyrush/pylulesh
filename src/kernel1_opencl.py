@@ -22,7 +22,7 @@ def element_volume(mesh, plat_id):
     cinfo += "  Device memory: %s\n" % device.global_mem_size
     cinfo += "  Device max clock speed: %s MHz\n" % device.max_clock_frequency
     cinfo += "  Device compute units: %s\n" % device.max_compute_units
-    print cinfo
+    #print cinfo
     
     ctx   = cl.Context([device])
     queue = cl.CommandQueue(ctx, properties=cl.command_queue_properties.PROFILING_ENABLE)
