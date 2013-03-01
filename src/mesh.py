@@ -31,17 +31,14 @@ def alloc_ndarray(shape,dtype):
     if isinstance(dtype,str):
         if dtype == "numpy_float64":
             return np.zeros(shape=shape,dtype=np.float64)
-            #pass #for pypy
         elif dtype == "numpy_int32":
             return np.zeros(shape=shape,dtype=np.int32)
-            #pass #for pypy
         elif dtype == "double":
             return [0.0] * (shape[0]*shape[1])
         else:
             return [0] * (shape[0]*shape[1])
     else:
         return np.zeros(shape=shape,dtype=dtype)
-        #pass #for pypy
 
 class Mesh(object):
     """
@@ -70,8 +67,6 @@ class Mesh(object):
         self.cycle = cycle
         self.element_vars = dict_type()
         self.node_vars    = dict_type()
-        #self.element_vars = {}
-        #self.node_vars    = {}
         if not isinstance(self.float_type,str) or self.float_type.startswith("numpy"):
             self.__init_topo_numpy()
         else:
@@ -83,9 +78,9 @@ class Mesh(object):
             for nv in node_vars:
                 self.add_node_var(nv)
     def add_element_var(self,name,ncomps=1):
-        self.element_vars[name] = alloc_ndarray([self.num_elements,ncomps],self.float_type)
+        self.element_vars[name] = alloc_ndarray([self.num_elements,ncomps],np.float64)
     def add_node_var(self,name,ncomps=1):
-        self.node_vars[name]   = alloc_ndarray([self.num_nodes,ncomps],self.float_type)
+        self.node_vars[name]   = alloc_ndarray([self.num_nodes,ncomps],np.float64)
     def wiggle_coords(self):
         nodes_x, nodes_y, nodes_z  = self.node_dims
         elems_x, elems_y, elems_z  = self.element_dims
@@ -108,10 +103,9 @@ class Mesh(object):
                     self.x[nidx] += wx
                     self.y[nidx] += wy
                     self.z[nidx] += wz
-                    coord_idx = nidx * 3
-                    self.xyz[coord_idx + 0] = tx
-                    self.xyz[coord_idx + 1] = ty
-                    self.xyz[coord_idx + 2] = tz
+                    self.xyz[nidx,0] += wx
+                    self.xyz[nidx,1] += wy
+                    self.xyz[nidx,2] += wz
                     nidx+=1
     def __init_topo_pure(self):
         tz = 0.0
@@ -169,25 +163,23 @@ class Mesh(object):
                     self.x[nidx] = tx
                     self.y[nidx] = ty
                     self.z[nidx] = tz
-                    coord_idx = nidx * 3
-                    self.xyz[coord_idx + 0] = tx
-                    self.xyz[coord_idx + 1] = ty
-                    self.xyz[coord_idx + 2] = tz
+                    self.xyz[nidx,0] = tx
+                    self.xyz[nidx,1] = ty
+                    self.xyz[nidx,2] = tz
                     nidx+=1
         nidx = 0
         zidx = 0
         for k in xrange(elems_z):
             for j in xrange(elems_y):
                 for i in xrange(elems_x):
-                    ele_idx = zidx*8
-                    self.conn[ele_idx+0] = nidx
-                    self.conn[ele_idx+1] = nidx                     + 1
-                    self.conn[ele_idx+2] = nidx                     +  nodes_x + 1
-                    self.conn[ele_idx+3] = nidx                     +  nodes_x
-                    self.conn[ele_idx+4] = nidx + nodes_x * nodes_y
-                    self.conn[ele_idx+5] = nidx + nodes_x * nodes_y + 1
-                    self.conn[ele_idx+6] = nidx + nodes_x * nodes_y + nodes_z +  1
-                    self.conn[ele_idx+7] = nidx + nodes_x * nodes_y + nodes_z
+                    self.conn[zidx,0] = nidx
+                    self.conn[zidx,1] = nidx                     + 1
+                    self.conn[zidx,2] = nidx                     +  nodes_x + 1
+                    self.conn[zidx,3] = nidx                     +  nodes_x
+                    self.conn[zidx,4] = nidx + nodes_x * nodes_y
+                    self.conn[zidx,5] = nidx + nodes_x * nodes_y + 1
+                    self.conn[zidx,6] = nidx + nodes_x * nodes_y + nodes_z +  1
+                    self.conn[zidx,7] = nidx + nodes_x * nodes_y + nodes_z
                     zidx+=1
                     nidx+=1
                 nidx+=1
@@ -234,4 +226,3 @@ class Mesh(object):
                               "fx","fy","fz",
                               "mass"])
         return m
-
