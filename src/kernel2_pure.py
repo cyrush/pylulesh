@@ -7,7 +7,7 @@
 """
 
 # This code fragment is from IntegrateStressForElems (and child routines)
-from pylulesh import mesh
+#from pylulesh import mesh
 
 def SumElemFaceNormal(pfx,pfy,pfz,
                       i0,i1,i2,i3,
@@ -187,7 +187,7 @@ def Kernel2(mesh):
 
         #get nodal coordinates from global arrays and copy into local arrays.
         for lnode in range(8): 
-            gnode = elemsToNodesConnectivity[k*8 + lnode]
+            gnode = int(elemsToNodesConnectivity[k*8 + lnode])
             x_local[lnode] = x[gnode];
             y_local[lnode] = y[gnode];
             z_local[lnode] = z[gnode];
@@ -210,7 +210,7 @@ def Kernel2(mesh):
     # copy nodal force contributions to global force arrray.
 
         for lnode in range(8):
-            gnode = elemsToNodesConnectivity[k*8 + lnode]
+            gnode = int(elemsToNodesConnectivity[k*8 + lnode])
 
             fx[gnode] += fx_local[lnode];
             fy[gnode] += fy_local[lnode];
