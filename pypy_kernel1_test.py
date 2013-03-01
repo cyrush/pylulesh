@@ -20,14 +20,14 @@ testname = 'python'
 res = {}
 for dim in sys.argv[1:]:
     t = timeit.Timer("run_python(%s)"%dim, python_setup)
-    res[dim] = t.timeit(1)/1.0
+    res[dim] = t.timeit(5)/5.0
 results[testname] = res
 
 testname = 'pypy'
 res = {}
 for dim in sys.argv[1:]:
     t = timeit.Timer("run_pypy(%s)"%dim, pypy_setup)
-    res[dim] = t.timeit(1)/1.0
+    res[dim] = t.timeit(5)/5.0
 results[testname] = res
 
 print results
