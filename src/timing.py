@@ -1,6 +1,7 @@
 import numpy as np
 import pylab
 import timeit
+import json
 
 import mesh
 import kernel1_pure
@@ -68,4 +69,5 @@ def run_kernel1():
         run_test(m_numpy,"numpy","k1",kernel1_numpy,res)
         run_test(m_numba,"numba","k1",kernel1_numba,res)
         run_test(m_numba,"numba_2","k1",kernel1_numba_2,res)
+        json.dump(res,open("k1_timing_results.json","w"))
     return plot_results(res,"k1_timing_results.png")
