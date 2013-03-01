@@ -13,7 +13,7 @@ class TestEnv(unittest.TestCase):
     def setUp(self):
         pass
     def test_pyopencl(self):
-        mesh = Mesh.default()
+        mesh = Mesh.default(obase="kernel1_ocl_%04d")
         kernel1_opencl.element_volume(mesh)
         mesh.save()
         

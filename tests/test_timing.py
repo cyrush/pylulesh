@@ -32,18 +32,8 @@ def prep_output_dir():
 class TestMesh(unittest.TestCase):
     def setUp(self):
         pass
-    def test_kernel1_01_pure(self):
-        m = Mesh.default([5,5,5],float_type="double",int_type="int",obase="kernel1_pure_%04d")
-        kernel1_pure.element_volume(m)
-        #m.save() # no save for pure python mesh
-    def test_kernel1_02_numpy(self):
-        m = Mesh.default([5,5,5],obase="kernel1_numpy_%04d")
-        kernel1_numpy.element_volume(m)
-        m.save()
-    def test_kernel1_03_numba(self):
-        m = Mesh.default([5,5,5],obase="kernel1_numba_%04d")
-        kernel1_numba.element_volume(m)
-        m.save()
+    def test_timing_01_kernel_1(self):
+        timing.run_kernel1()
 
 
 

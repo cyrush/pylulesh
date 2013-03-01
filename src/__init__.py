@@ -8,6 +8,10 @@
 """
 
 from mesh import Mesh
-import kernel1
+import kernel1_pure
+import kernel1_numpy
+import kernel1_numba
 import kernel1_opencl
 import kernel2
+
+import timing

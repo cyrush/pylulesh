@@ -14,6 +14,8 @@ try:
 except:
     pass
 
+import random
+
 # if we have 2.7, use an OrderedDict instead of a standard dict
 dict_type = dict
 try:
@@ -79,6 +81,32 @@ class Mesh(object):
         self.element_vars[name] = alloc_ndarray([self.num_elements,ncomps],np.float64)
     def add_node_var(self,name,ncomps=1):
         self.node_vars[name]   = alloc_ndarray([self.num_nodes,ncomps],np.float64)
+    def wiggle_coords(self):
+        nodes_x, nodes_y, nodes_z  = self.node_dims
+        elems_x, elems_y, elems_z  = self.element_dims
+        nidx = 0
+        for k in xrange(nodes_z):
+            for j in xrange(nodes_y):
+                for i in xrange(nodes_x):
+                    # if you only want to "wiggle" the inside nodes
+                    # use the following: (this would perserve overall vol)
+                    #if k == 0 or k == nodes_z - 1:
+                    #    pass
+                    #elif j == 0 or j == nodes_y - 1:
+                    #    pass
+                    #elif i == 0 or i == nodes_x - 1:
+                    #    pass
+                    #else:
+                    wx = (random.random()-.5) * .30 / float(elems_x)
+                    wy = (random.random()-.5) * .30 / float(elems_y)
+                    wz = (random.random()-.5) * .30 / float(elems_z)
+                    self.x[nidx] += wx
+                    self.y[nidx] += wy
+                    self.z[nidx] += wz
+                    self.xyz[nidx,0] += wx
+                    self.xyz[nidx,1] += wy
+                    self.xyz[nidx,2] += wz
+                    nidx+=1
     def __init_topo_pure(self):
         tz = 0.0
         ty = 0.0
