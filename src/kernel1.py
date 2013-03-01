@@ -69,12 +69,20 @@ def calc_elem_volume(x,y,z):
         return volume
 
 @autojit
-def element_volume(x,y,z,conn,x_loc,y_loc,z_loc,v):
+def element_volume_jit(x,y,z,conn,x_loc,y_loc,z_loc,v):
     for i in range(v.shape[0]):
         for j in range(8):
             x_loc[j] =  x[conn[i,j]]
             y_loc[j] =  y[conn[i,j]]
             z_loc[j] =  z[conn[i,j]]
+        v[i] = calc_elem_volume(x_loc,y_loc,z_loc)
+
+def element_volume_py(x,y,z,conn,x_loc,y_loc,z_loc,v):
+    for i in range(len(v)):
+        for j in range(8):
+            x_loc[j] =  x[conn[i*8 + j]]
+            y_loc[j] =  y[conn[i*8 + j]]
+            z_loc[j] =  z[conn[i*8 + j]]
         v[i] = calc_elem_volume(x_loc,y_loc,z_loc)
 
 def element_volume_driver_numpy(mesh):
@@ -91,8 +99,7 @@ def element_volume_driver_py(mesh):
     element_volume(mesh.x,mesh.y,mesh.z,mesh.conn,
                          x_ele,y_ele,z_ele,mesh.element_vars["v"])
 
-element_volume_jit = element_volume
-element_volume_py  = element_volume.py_func
+element_volume     = element_volume_jit
 
 triple_product_jit = triple_product
 triple_product_py  = triple_product.py_func
@@ -110,4 +117,4 @@ def setupPy():
     globals()['calc_elem_volume'] = calc_elem_volume_py
     globals()['element_volume'] = element_volume_py
 
-setupNumba()
+#setupPy()
