@@ -22,63 +22,77 @@ def rand_func():
     f = np.fft.irfft(coeffs, 256)
     return np.append(f, f[0])
  
-# Make some data
-x = np.linspace(1.0, 9.0, num=257, endpoint=True)
-y1 = 1.5 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 5.0) * (x - 5.0))
-y2 = 3.0 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 7.0) * (x - 7.0))
+
+def xkcd_plot_sample():
+    # Make some data
+    x = np.linspace(1.0, 9.0, num=257, endpoint=True)
+    y1 = 1.5 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 5.0) * (x - 5.0))
+    y2 = 3.0 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 7.0) * (x - 7.0))
+    xkcd_plot(x,[y1,y2])
  
-# Add the jiggles
-scale = 25.0
-y1 += rand_func() * scale
-y2 += rand_func() * scale
+def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png"): 
+
+
+    # Add the jiggles
+    scale = jiggleScale
+    for y in ys: 
+        y += rand_func() * scale
+        y += rand_func() * scale
  
-# Set up a figure
-fig = Figure()
-canvas = fc(fig)
+    # Set up a figure
+    fig = Figure()
+    canvas = fc(fig)
  
 # Plot the data
-ax = fig.add_subplot(1, 1, 1)
-ax.plot(x[5:-5], y1[5:-5], 'c', lw=2)
-ax.plot(x[5:-5], y2[5:-5], 'white', lw=7)
-ax.plot(x[5:-5], y2[5:-5], 'r', lw=2)
-ax.set_ylim(0, 10)
+    ax = fig.add_subplot(1, 1, 1)
+    colors = ['c','r','g','b','y']
+    
+    for i  in range(len(ys)): 
+        # lay down a white line first to create overlap effect
+        ax.plot(x[xmax:xmin], ys[i][ymax:ymin], 'white', lw=7)
+        ax.plot(x[xmax:xmin], ys[i][ymax:ymin], colors[i], lw=2)
+
+    ax.set_ylim(ylim_min, ylim_max)
  
-# Poor man's x-axis. There's probably a better way of doing this.
-xaxis = [0.0] * 257
-xaxis += rand_func() * 10.0
-ax.plot(x[3:-3], xaxis[3:-3], 'k', lw=2)
-ax.arrow(8.75, xaxis[-3], 0.1, 0, fc='k', head_width=0.2, head_length=0.15)
+    # Poor man's x-axis. There's probably a better way of doing this.
+    xaxis = [0.0] * 257
+    xaxis += rand_func() * jiggleScale/2.5
+    ax.plot(x[3:-3], xaxis[3:-3], 'k', lw=2)
+    ax.arrow(8.75, xaxis[-3], 0.1, 0, fc='k', head_width=0.2, head_length=0.15)
  
-# Poor man's x-tick
-x = [4.75, 4.75]
-yaxis = [-0.1, 0.1]
-ax.plot(x, yaxis, 'k', lw=1.5)
+    # Poor man's x-ticks
+    for x in xticks: 
+        x = [4.75, 4.75]
+        yaxis = [-0.1, 0.1]
+        ax.plot(x, yaxis, 'k', lw=1.5)
  
-# XKCD font. This won't work on your machine. Install the font
-# and change the path to the place where you installed it.
-#prop = fm.FontProperties(fname='/Users/damon/Library/Fonts/Humor-Sans.ttf')
-ax.text(4.5, -0.5, 'PEAK', size=11)
+    # XKCD font. This won't work on your machine. Install the font
+    # and change the path to the place where you installed it.
+    #prop = fm.FontProperties(fname='/Users/damon/Library/Fonts/Humor-Sans.ttf')
+    ax.text(4.5, -0.5, 'PEAK', size=11)
  
-# Turn off decoration
-ax.set_xticks([])
-ax.set_yticks([])
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_frame_on(False)
+   # Turn off decoration
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.set_frame_on(False)
  
 # Turn off all clipping
-def noclip(ax): 
-     "Turn off all clipping in axes ax; call immediately before drawing" 
-     ax.set_clip_on(False) 
-     artists = [] 
-     artists.extend(ax.collections) 
-     artists.extend(ax.patches) 
-     artists.extend(ax.lines) 
-     artists.extend(ax.texts) 
-     artists.extend(ax.artists) 
-     for a in artists: 
-         a.set_clip_on(False) 
-noclip(ax)
+    def noclip(ax): 
+        "Turn off all clipping in axes ax; call immediately before drawing" 
+        ax.set_clip_on(False) 
+        artists = [] 
+        artists.extend(ax.collections) 
+        artists.extend(ax.patches) 
+        artists.extend(ax.lines) 
+        artists.extend(ax.texts) 
+        artists.extend(ax.artists) 
+        for a in artists: 
+            a.set_clip_on(False) 
+    noclip(ax)
  
 # Save
-fig.savefig('xkcd.png')
+    fig.savefig(plotname)
+
+xkcd_plot_sample()
