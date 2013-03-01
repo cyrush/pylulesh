@@ -267,24 +267,18 @@ function build_pypy
     echo $DEST
     cd $DEST
     download https://bitbucket.org/pypy/pypy/get release-2.0-beta-1.tar.bz2
-    ls
     info "[Inflating: release-2.0-beta-1.tar.bz2]"
     bunzip2 release-2.0-beta-1.tar.bz2
-    ls
     info "[Untaring: release-2.0-beta-1.tar]"
     tar xf release-2.0-beta-1.tar
     rm release-2.0-beta-1.tar
-    ls
     mv pypy-pypy-* pypy-pypy
-    ls
     download https://bitbucket.org/pypy/pypy/downloads pypy-2.0-beta1-linux64-libc2.13.tar.bz2
-    ls
+    info "[Inflating: pypy-2.0-beta1-linux64-libc2.13.tar.bz2]"
     bunzip2 pypy-2.0-beta1-linux64-libc2.13.tar.bz2
-    ls
+    info "[Untaring: pypy-2.0-beta1-linux64-libc2.13.tar]"
     tar xf pypy-2.0-beta1-linux64-libc2.13.tar
-    ls
     rm pypy-2.0-beta1-linux64-libc2.13.tar
-    ls
     cd $START_DIR
 }
 
