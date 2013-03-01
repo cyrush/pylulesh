@@ -20,7 +20,7 @@ testname = 'python_kernel1'
 res = {}
 for dim in sys.argv[1:]:
     t = timeit.Timer("run_python(%s)"%dim, python_setup)
-    res[(int(dim)] = t.timeit(5)/5.0
+    res[int(dim)] = t.timeit(5)/5.0
 results[testname] = res
 
 testname = 'pypy_kernel1'
