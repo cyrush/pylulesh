@@ -60,6 +60,10 @@ class TestMesh(unittest.TestCase):
     def test_mesh_05_pure(self):
         m = Mesh.default(float_type="double",int_type="int")
         self.assertTrue(isinstance(m.x,list))
+    def test_mesh_06_wiggle(self):
+        m = Mesh.default(obase=pjoin("tests","_output","pylul_%04d_wiggle"))
+        m.wiggle_coords()
+        m.save()
 
 
 
