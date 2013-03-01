@@ -52,7 +52,8 @@ def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,yl
 
     for y in ys: 
         yy = np.interp(nx,x,y)
-        yy += rand_func() * scale 
+        if not useLabels:
+            yy += rand_func() * scale 
         yn.append(yy)
 
     ys = yn
@@ -76,7 +77,8 @@ def xkcd_plot (x,ys,jiggleScale=5,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,yl
     # Poor man's x-axis. There's probably a better way of doing this.
 #    xaxis = nx
     xaxis = [ylim_min] * 257
-    xaxis += rand_func() * scale/2.5-(ylim_max-ylim_min)*.02
+    if not useLables:
+        xaxis += rand_func() * scale/2.5-(ylim_max-ylim_min)*.02
 #    print "axis endpoints", x[0], x[-1], xaxis[0], xaxis[-1]
     xxaxis = ((x[0:-1]-x[0]-2)*1.1+(x[0]+1.5)*1.1)
 
