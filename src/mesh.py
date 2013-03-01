@@ -215,7 +215,7 @@ class Mesh(object):
         m = Mesh(element_dims,
                  obase = obase,
                  float_type = float_type,
-                 int_type   = float_type,
+                 int_type   = int_type,
                  element_vars = ["p","e","q","v",
                                  "vdov","delv","volo",
                                  "arealg",
