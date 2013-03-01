@@ -8,7 +8,7 @@ import kernel1_pure
 import kernel1_numpy
 import kernel1_numba
 import kernel1_numba_2
-
+from xkcd import *
 
 
 def run_test(m,tag,kname,kernel,res):
@@ -45,20 +45,26 @@ class WallTimer(object):
 def plot_results(res,ofile):
     xs = res["xs"]
     xs.sort()
-    fig = pylab.figure()
-    ax = fig.add_subplot(1, 1, 1)
+    #fig = pylab.figure()
+    #ax = fig.add_subplot(1, 1, 1)
+    ys = []
     for k in res.keys():
         if k == "xs":
             continue
-        ys = [ res[k][x] for x in xs ]
-        ax.plot(xs, ys,label=k)
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels)
+        r    = np.zeros(shape=(len(xs),),dtype=np.float64) 
+        r[:] =[ res[k][x] for x in xs ]
+        ys.append(r)
+        #ax.plot(xs, ys,label=k)
+    #handles, labels = ax.get_legend_handles_labels()
+    #ax.legend(handles, labels)
+    #fig.savefig(ofile)
+    print xs,ys
+    fig = xkcd_plot(xs,ys)
     fig.savefig(ofile)
     return fig
 
 def run_kernel1():
-    res = {"pure":{},"numpy":{},"numba":{},"numba_2":{},"xs":[2,8,16,32]}
+    res = {"pure":{},"numpy":{},"numba":{},"numba_2":{},"xs":[2,8]}
     for edge in res["xs"]:
         m_pure  = mesh.Mesh.default([edge,edge,edge],
                                      float_type="double",
