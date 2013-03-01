@@ -68,7 +68,9 @@ def SumElemFaceNormal(pfx,pfy,pfz,
 
 
 # B should be 2 dim array, second of dim 8
-@autojit
+nd2type = double[:,:]
+@jit(argtypes=(nd2type,double,double,double,
+               nd2type,nd2type,nd2type))
 def SumElemStressesToNodeForces(B, 
                                 stress_xx,
                                 stress_yy,
