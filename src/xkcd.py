@@ -28,13 +28,17 @@ def xkcd_plot_sample():
     x = np.linspace(1.0, 9.0, num=257, endpoint=True)
     y1 = 1.5 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 5.0) * (x - 5.0))
     y2 = 3.0 + 10.0 * (np.sin(x) * np.sin(x) / np.sqrt(x)) * np.exp(-0.5 * (x - 7.0) * (x - 7.0))
-    xkcd_plot(x,[y1,y2])
+    xkcd_plot(x,[y1,y2],xmin=5,xmax=-5,ymin=5,ymax=-5)
  
-def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png"): 
+def xkcd_plot (x,ys,jiggleScale=.1,xmin=0,xmax=-1,ymin=0,ymax=-1,ylim_min=1e-5,ylim_max=10,xticks=[[4.75,4.75]],plotname="xkcd.png"): 
+    xticks = []
+    for xt in x: 
+#        print 'tick locations' ,xt
+        xticks.append([xt,xt])
     nx = np.linspace(x[0], x[-1], num=257, endpoint=True)
     #xmin = 0# x[0] - x[0] * .1
     #xmax = x[-1] + x[-1] * .1
-    ylim_max = 3
+    ylim_max = np.max(ys)*1.1
     # Add the jiggles
     scale = jiggleScale
     yn = []
@@ -44,7 +48,7 @@ def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,yl
         yy += rand_func() * scale
         yn.append(yy)
     ys = yn
-    x =nx
+    x  = nx
     # Set up a figure
     fig = Figure()
     canvas = fc(fig)
@@ -52,31 +56,38 @@ def xkcd_plot (x,ys,jiggleScale=25.0,xmin=-5,xmax=5,ymin=-5,ymax=5,ylim_min=0,yl
 # Plot the data
     ax = fig.add_subplot(1, 1, 1)
     colors = ['c','r','g','b','y']
-    
+    verticaloffset = .003
     for i  in range(len(ys)): 
         # lay down a white line first to create overlap effect
-        ax.plot(x[xmax:xmin], ys[i][ymax:ymin], 'white', lw=7)
-        ax.plot(x[xmax:xmin], ys[i][ymax:ymin], colors[i], lw=2)
+#        ax.plot(x[xmin:xmax], ys[i][ymin:ymax], 'white', lw=7)
+        ax.plot(x[xmin:xmax], ys[i][ymin:ymax]+verticaloffset, colors[i%len(colors)], lw=2)
 
-    ax.set_ylim(ylim_min, ylim_max)
- 
+
+    ax.set_xlim(x[0]*.9,x[-1]*1.2)
     # Poor man's x-axis. There's probably a better way of doing this.
-    xaxis = [0.0] * 257
+#    xaxis = nx
+    xaxis = [ylim_min] * 257
     xaxis += rand_func() * jiggleScale/2.5
-    #ax.plot(x[3:-3], xaxis[3:-3], 'k', lw=2)
-    #ax.arrow(8.75, xaxis[-3], 0.1, 0, fc='k', head_width=0.2, head_length=0.15)
+#    print "axis endpoints", x[0], x[-1], xaxis[0], xaxis[-1]
+    xxaxis = ((x[0:-1]-x[0]-2)*1.1+(x[0]+1.5)*1.1)
+    ax.plot(xxaxis, xaxis[0:-1], 'k', lw=2)
+    print dir(ax.arrow)
+    ax.arrow(xxaxis[-1], xaxis[-2], 0.1, 0, fc='k', width=.0001,head_width=.001, head_length=.3)
+
+    ax.set_ylim(np.min(xaxis)*4, ylim_max*1.1)
  
     # Poor man's x-ticks
-    for x in xticks: 
-        x = [4.75, 4.75]
-        yaxis = [-0.1, 0.1]
-        ax.plot(x, yaxis, 'k', lw=1.5)
- 
+#    for x in xticks: 
+#        yaxis = [-0.001, 0.001]
+#        ax.plot(x, yaxis, 'k', lw=1.5)
+
+#    ax.set_yscale('log')
+#    ax.set_xscale('log')
     # XKCD font. This won't work on your machine. Install the font
     # and change the path to the place where you installed it.
     #prop = fm.FontProperties(fname='/Users/damon/Library/Fonts/Humor-Sans.ttf')
-    ax.text(4.5, -0.5, 'PEAK', size=11)
- 
+#    ax.text(4.5, -0.5, 'PEAK', size=11)
+    
    # Turn off decoration
     ax.set_xticks([])
     ax.set_yticks([])
