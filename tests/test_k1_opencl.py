@@ -22,8 +22,12 @@ class TestEnv(unittest.TestCase):
     def test_pyopencl(self):
         if using_pyocl:
             mesh = Mesh.default(obase="kernel1_ocl_%04d")
-            kernel1_opencl.element_volume(mesh)
+            tmg0 = kernel1_opencl.element_volume(mesh, 0)
+            tmg1 = kernel1_opencl.element_volume(mesh, 1)
             mesh.save()
+
+            print "Execution time0: %g sec" % tmg0
+            print "Execution time1: %g sec" % tmg1
         
 if __name__ == '__main__':
     unittest.main()
