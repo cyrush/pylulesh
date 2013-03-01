@@ -81,6 +81,15 @@ function check_llvm_install
     fi
 }
 
+function check_pypy_install
+{
+    if [[ -e $1/pypy-pypy/pytest.py ]] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 function check_hdf5_install
 {
     if [[ -e $1/hdf5/lib ]] ; then
@@ -249,6 +258,36 @@ function build_llvm
     cd $START_DIR
 }
 
+
+function build_pypy
+{
+    info "================================="
+    info "Setting up pypy"
+    info "================================="
+    echo $DEST
+    cd $DEST
+    download https://bitbucket.org/pypy/pypy/get release-2.0-beta-1.tar.bz2
+    ls
+    info "[Inflating: release-2.0-beta-1.tar.bz2]"
+    bunzip2 release-2.0-beta-1.tar.bz2
+    ls
+    info "[Untaring: release-2.0-beta-1.tar]"
+    tar xf release-2.0-beta-1.tar
+    rm release-2.0-beta-1.tar
+    ls
+    mv pypy-pypy-* pypy-pypy
+    ls
+    download https://bitbucket.org/pypy/pypy/downloads pypy-2.0-beta1-linux64-libc2.13.tar.bz2
+    ls
+    bunzip2 pypy-2.0-beta1-linux64-libc2.13.tar.bz2
+    ls
+    tar xf pypy-2.0-beta1-linux64-libc2.13.tar
+    ls
+    rm pypy-2.0-beta1-linux64-libc2.13.tar
+    ls
+    cd $START_DIR
+}
+
 function build_hdf5
 {
     info "================================="
@@ -385,6 +424,13 @@ function main
         info "[Found: LLVM @ $LLVM_PREFIX <Skipping build>]"
     else
         build_llvm
+    fi
+
+    check_pypy_install $DEST
+    if [[ $? == 0 ]] ; then
+        info "[Found: PyPy @ $DEST <Skipping build>]"
+    else
+        build_pypy
     fi
 
     check_hdf5_install $DEST
