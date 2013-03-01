@@ -29,6 +29,8 @@ def prep_output_dir():
     for f in glob.glob(pjoin(odir,"*")):
         os.remove(f)
 
+from time import time
+
 class TestMesh(unittest.TestCase):
     def setUp(self):
         pass
@@ -38,7 +40,16 @@ class TestMesh(unittest.TestCase):
         m.element_vars["dxx"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
         m.element_vars["dyy"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
         m.element_vars["dzz"][:]= np.random.random_sample(m.num_elements).reshape((m.num_elements,1))
-        #kernel2.Kernel2(m)
+        t0  = time()
+        kernel2.Kernel2(m)
+        t1 = time()        
+        kernel2_aj.Kernel2(m)
+        t2 = time()
+        kernel2_aj.Kernel2(m)
+        t3 = time()
+        print 'numpy time', t1 - t0        
+        print 'autojit with compile ', t2 - t1
+        print 'autojit post compile ', t3 - t2
         m.save()
 
 if __name__ == '__main__':
