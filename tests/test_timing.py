@@ -34,6 +34,8 @@ class TestMesh(unittest.TestCase):
         pass
     def test_timing_01_kernel_1(self):
         timing.run_kernel1()
+    def test_timing_01_kernel_2(self):
+        timing.run_kernel2()
 
 
 

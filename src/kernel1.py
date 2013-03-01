@@ -80,9 +80,9 @@ def element_volume_jit(x,y,z,conn,x_loc,y_loc,z_loc,v):
 def element_volume_py(x,y,z,conn,x_loc,y_loc,z_loc,v):
     for i in range(len(v)):
         for j in range(8):
-            x_loc[j] =  x[conn[i*8 + j]]
-            y_loc[j] =  y[conn[i*8 + j]]
-            z_loc[j] =  z[conn[i*8 + j]]
+            x_loc[j] =  x[int(conn[i*8 + j])]
+            y_loc[j] =  y[int(conn[i*8 + j])]
+            z_loc[j] =  z[int(conn[i*8 + j])]
         v[i] = calc_elem_volume(x_loc,y_loc,z_loc)
 
 def element_volume_driver_numpy(mesh):

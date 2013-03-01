@@ -4,8 +4,8 @@ try:
 except:
     pass
 
-def element_volume(mesh):
-    plat_id = 0
+def element_volume(mesh, plat_id):
+    #plat_id = 0
     dev_id  = 0
     platform = cl.get_platforms()[plat_id]
     device = platform.get_devices()[dev_id]
@@ -25,7 +25,7 @@ def element_volume(mesh):
     print cinfo
     
     ctx   = cl.Context([device])
-    queue = cl.CommandQueue(ctx)
+    queue = cl.CommandQueue(ctx, properties=cl.command_queue_properties.PROFILING_ENABLE)
     mf = cl.mem_flags
 
     v = mesh.element_vars["v"]
@@ -36,6 +36,8 @@ def element_volume(mesh):
     dest_buf = cl.Buffer(ctx, mf.WRITE_ONLY, v.nbytes)
     
     prg = cl.Program(ctx, """
+    #pragma OPENCL EXTENSION cl_khr_fp64: enable
+
     double triple_product(double x0, double y0, double z0,
     double x1, double y1, double z1, double x2, double y2, double z2)
     {
@@ -125,6 +127,11 @@ def element_volume(mesh):
     }
     """).build()
     
-    prg.kernel1(queue, v.shape, None, x_buf, y_buf, z_buf, conn_buf, dest_buf)
+    e0 = prg.kernel1(queue, v.shape, None, x_buf, y_buf, z_buf, conn_buf, dest_buf)
+    e0.wait()
     
-    cl.enqueue_copy(queue, v, dest_buf)
+    e1 = cl.enqueue_copy(queue, v, dest_buf)
+    e1.wait()
+    
+    return 1e-9 * ((e0.profile.end - e0.profile.start) +
+                   (e1.profile.end - e1.profile.start))
