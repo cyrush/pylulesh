@@ -68,8 +68,8 @@ class Mesh(object):
         self.conn  = alloc_ndarray([self.num_elements,8],self.int_type)
         self.obase = obase
         self.cycle = cycle
-        self.element_vars = {}
-        self.node_vars    = {}
+        self.element_vars = dict_type()
+        self.node_vars    = dict_type()
         #self.element_vars = {}
         #self.node_vars    = {}
         if not isinstance(self.float_type,str) or self.float_type.startswith("numpy"):
