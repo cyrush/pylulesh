@@ -6,6 +6,7 @@ import json
 import mesh
 import kernel1_pure
 import kernel1_numpy
+import kernel1_numpy_2
 import kernel1_numba
 import kernel1_numba_2
 from xkcd import *
@@ -64,7 +65,7 @@ def plot_results(res,ofile):
     return fig
 
 def run_kernel1():
-    res = {"pure":{},"numpy":{},"numba":{},"numba_2":{},"xs":[2,8]}
+    res = {"pure":{},"numpy":{},"numpy_2":{},"numba":{},"numba_2":{},"xs":[2,8]}
     for edge in res["xs"]:
         m_pure  = mesh.Mesh.default([edge,edge,edge],
                                      float_type="double",
@@ -73,6 +74,7 @@ def run_kernel1():
         m_numba = mesh.Mesh.default([edge,edge,edge])
         run_test(m_pure,"pure","k1",kernel1_pure,res)
         run_test(m_numpy,"numpy","k1",kernel1_numpy,res)
+        run_test(m_numpy,"numpy_2","k1",kernel1_numpy_2,res)
         run_test(m_numba,"numba","k1",kernel1_numba,res)
         run_test(m_numba,"numba_2","k1",kernel1_numba_2,res)
         json.dump(res,open("k1_timing_results.json","w"))
