@@ -1,6 +1,8 @@
 #!/bin/sh
 set -x
 
+export PYTHONPATH=$PWD/src:$PYTHONPATH
+
 function build
 {
     if [[ -e tests/target_test_kernel1-c ]]
@@ -20,5 +22,5 @@ function runtest
     done
 }
 
-build
-runtest
+build || exit 1
+runtest || exit 1
