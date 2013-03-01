@@ -97,6 +97,16 @@ def plot_results(res,ofile):
     fig.savefig(ofile)
     return fig
 
+def add_external_data(res, filename):
+    try:
+       fio = open(filename)
+       data = fio.read()
+       fio.close()
+       newdict = eval(data)
+       res.update(newdict)
+    except:
+       pass
+
 def run_kernel1():
     res = {"pure":{},"numpy":{},"numpy_2":{},"numba":{},"numba_2":{},"ocl_p_0":{},"xs":[2,8,16]}
     for edge in res["xs"]:
@@ -112,6 +122,7 @@ def run_kernel1():
         run_test(m_numba,"numba","k1",kernel1_numba,res)
         run_test(m_numba,"numba_2","k1",kernel1_numba_2,res)
         run_ocl_test(m_ocl,"ocl_p_0","k1",kernel1_opencl,0,res)
+        add_external_data(res, "k1_timing_results_pypy")
         json.dump(res,open("k1_timing_results.json","w"))
     return plot_results(res,"k1_timing_results.png")
 
@@ -126,5 +137,6 @@ def run_kernel2():
         run_test2(m_pure,"pure","k2",kernel2_pure,res)
         run_test2(m_numpy,"numpy","k2",kernel2_numpy,res)
         run_test2(m_numba,"numba","k2",kernel2_numba,res)
+        add_external_data(res, "k2_timing_results_pypy")
         json.dump(res,open("k2_timing_results.json","w"))
     return plot_results(res,"k2_timing_results.png")
