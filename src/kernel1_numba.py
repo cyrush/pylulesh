@@ -1,11 +1,16 @@
 import numpy as np
 from numba import autojit, double, jit, int32
 
-@autojit
+nd1type = double[:]
+nd2type = int32[:,:]
+
+@jit(argtypes=(double, double, double,
+               double, double, double,
+               double, double, double))
 def triple_product(x1, y1, z1, x2, y2, z2, x3, y3, z3):
     return x1*(y2*z3 - z2*y3) + x2*(z1*y3 - y1*z3) + x3*(y1*z2 - z1*y2)
 
-@autojit
+@jit(argtypes=(nd1type, nd1type, nd1type))
 def calc_elem_volume(x,y,z):  
         twelveth = (1.0)/(12.0);
         dx61 = x[6] - x[1];
@@ -68,7 +73,8 @@ def calc_elem_volume(x,y,z):
         volume = (vol_a + vol_b + vol_c) * twelveth;
         return volume
 
-@autojit
+@jit(argtypes=(nd1type,nd1type,nd1type,nd2type,
+               nd1type,nd1type,nd1type,nd1type))
 def element_volume_numba(x,y,z,conn,x_loc,y_loc,z_loc,v):
     for i in range(v.shape[0]):
         for j in range(8):
