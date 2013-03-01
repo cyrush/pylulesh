@@ -1,100 +1,23 @@
 import numpy as np
 from numba import autojit, double, jit, int32
 
-@autojit
-def triple_product(x1, y1, z1, x2, y2, z2, x3, y3, z3):
-    return x1*(y2*z3 - z2*y3) + x2*(z1*y3 - y1*z3) + x3*(y1*z2 - z1*y2)
+nd1type = double[:]
+nd2type = int32[:,:]
 
-@autojit
-def calc_elem_volume(x,y,z):  
-        twelveth = (1.0)/(12.0);
-        dx61 = x[6] - x[1];
-        dy61 = y[6] - y[1];
-        dz61 = z[6] - z[1];
-
-        dx70 = x[7] - x[0];
-        dy70 = y[7] - y[0];
-        dz70 = z[7] - z[0];
-
-        dx63 = x[6] - x[3];
-        dy63 = y[6] - y[3];
-        dz63 = z[6] - z[3];
-
-        dx20 = x[2] - x[0];
-        dy20 = y[2] - y[0];
-        dz20 = z[2] - z[0];
-
-        dx50 = x[5] - x[0];
-        dy50 = y[5] - y[0];
-        dz50 = z[5] - z[0];
-
-        dx64 = x[6] - x[4];
-        dy64 = y[6] - y[4];
-        dz64 = z[6] - z[4];
-
-        dx31 = x[3] - x[1];
-        dy31 = y[3] - y[1];
-        dz31 = z[3] - z[1];
-
-        dx72 = x[7] - x[2];
-        dy72 = y[7] - y[2];
-        dz72 = z[7] - z[2];
-
-        dx43 = x[4] - x[3];
-        dy43 = y[4] - y[3];
-        dz43 = z[4] - z[3];
-
-        dx57 = x[5] - x[7];
-        dy57 = y[5] - y[7];
-        dz57 = z[5] - z[7];
-
-        dx14 = x[1] - x[4];
-        dy14 = y[1] - y[4];
-        dz14 = z[1] - z[4];
-
-        dx25 = x[2] - x[5];
-        dy25 = y[2] - y[5];
-        dz25 = z[2] - z[5];
-
-        #((x1)*(y2*z3 - z2*y3) + 
-        # x2*(z1*y3 - y1*z3) + 
-        # x3*(y1*z2 - z1*y2) )
-        vol_a_t = ((dx31 + dx72)*((dx63)*(dz20) - (dy20)*(dz63)) + 
-                   (dy31 + dy72)*((dx20)*(dz63) - (dx63)*(dz20)) + 
-                   (dz31 + dz72)*((dx63)*(dy20) - (dx20)*(dy63)))
-        vol_a = triple_product(dx31 + dx72, dx63, dx20,
-                               dy31 + dy72, dy63, dy20,
-                               dz31 + dz72, dz63, dz20)
-        vol_b_t = ((dx43 + dx57)*((dy64)*(dz70) - (dy70)*(dz64)) + 
-                   (dy43 + dy57)*((dx20)*(dz64) - (dx64)*(dz70)) + 
-                   (dz43 + dz57)*((dx64)*(dy70) - (dx70)*(dy64)))
-        vol_b = triple_product(dx43 + dx57, dx64, dx70,
-                               dy43 + dy57, dy64, dy70,
-                               dz43 + dz57, dz64, dz70) 
-        vol_c_t = ((dx14 + dx25)*((dy61)*(dz50) - (dy50)*(dz61)) + 
-                   (dy14 + dy25)*((dx50)*(dz61) - (dx61)*(dz50)) + 
-                   (dz14 + dz25)*((dx61)*(dy50) - (dx50)*(dy61)))
-        vol_c = triple_product(dx14 + dx25, dx61, dx50,
-                               dy14 + dy25, dy61, dy50,
-                               dz14 + dz25, dz61, dz50);
-        if vol_a_t != vol_a:
-            print vol_a_t, vol_a
-        if vol_b_t != vol_b:
-            print vol_b_t, vol_b
-        if vol_c_t != vol_c:
-            print vol_c_t, vol_c
-        volume = (vol_a + vol_b + vol_c) * twelveth;
-        volume_t = (vol_a_t + vol_b_t + vol_c_t) * twelveth;
-        return volume_t
-
-@autojit
+@jit(argtypes=(nd1type,nd1type,nd1type,nd2type,
+               nd1type,nd1type,nd1type,nd1type))
 def element_volume_numba(x,y,z,conn,x_loc,y_loc,z_loc,v):
     for i in range(v.shape[0]):
         for j in range(8):
             x_loc[j] =  x[conn[i,j]]
             y_loc[j] =  y[conn[i,j]]
             z_loc[j] =  z[conn[i,j]]
-        v[i] = calc_elem_volume(x_loc,y_loc,z_loc)
+        v[i]   = ((((x_loc[3] - x_loc[1]) + (x_loc[7] - x_loc[2]))*(((x_loc[6] - x_loc[3]))*(z_loc[2] - z_loc[0]) - (y_loc[2] - y_loc[0])*(z_loc[6] - z_loc[3])) + (y_loc[3] - y_loc[1] + y_loc[7] - y_loc[2])*((x_loc[2] - x_loc[0])*(z_loc[6] - z_loc[3]) - ((x_loc[6] - x_loc[3]))*(z_loc[2] - z_loc[0])) + (z_loc[3] - z_loc[1] + z_loc[7] - z_loc[2])*(((x_loc[6] - x_loc[3]))*(y_loc[2] - y_loc[0]) - (x_loc[2] - x_loc[0])*(y_loc[6] - y_loc[3]))) +
+        ((x_loc[4] - x_loc[3] + x_loc[5] - x_loc[7])*((y_loc[6] - y_loc[4])*(z_loc[7] - z_loc[0]) - (y_loc[7] - y_loc[0])*(z_loc[6] - z_loc[4])) + (y_loc[4] - y_loc[3] + y_loc[5] - y_loc[7])*((x_loc[2] - x_loc[0])*(z_loc[6] - z_loc[4]) - (x_loc[6] - x_loc[4])*(z_loc[7] - z_loc[0])) + 
+                   (z_loc[4] - z_loc[3] + z_loc[5] - z_loc[7])*((x_loc[6] - x_loc[4])*(y_loc[7] - y_loc[0] ) - (x_loc[7] - x_loc[0])*(y_loc[6] - y_loc[4]))) + 
+        ((x_loc[1] - x_loc[4] + x_loc[2] - x_loc[5])*((y_loc[6] - y_loc[1])*(z_loc[5] - z_loc[0]) - (y_loc[5] - y_loc[0])*(z_loc[6] - z_loc[1])) + 
+                   (y_loc[1] - y_loc[4] + y_loc[2] - y_loc[5])*((x_loc[5] - x_loc[0])*(z_loc[6] - z_loc[1]) - (x_loc[6] - x_loc[1])*(z_loc[5] - z_loc[0])) +
+                   (z_loc[1] - z_loc[4] + z_loc[2] - z_loc[5])*((x_loc[6] - x_loc[1])*(y_loc[5] - y_loc[0]) - (x_loc[5] - x_loc[0])*(y_loc[6] - y_loc[1])))) / 12.0
 
 
 def element_volume(mesh):
