@@ -185,7 +185,8 @@ function bootstrap_python
     tar -xzf Python-$PY_VERSION.tgz
     cd Python-$PY_VERSION
     info "[Configuring Python]"
-    ./configure --prefix=$PY_PREFIX &> ../logs/python_configure.txt
+    mkdir -p ${PY_PREFIX}/lib/
+    ./configure --enable-shared --prefix=$PY_PREFIX &> ../logs/python_configure.txt
     check $?
     info "[Building Python]"
     make -j 4 &> ../logs/python_build.txt
@@ -360,7 +361,16 @@ function build_python_modules
         unsert CFLAGS
     fi
     $PIP_EXE install tornado
+    if check_osx; then
+        export CC=clang
+        export CXX=clang++
+    fi;
     $PIP_EXE install pyzmq
+    if check_osx; then
+        unset CC
+        unset CXX
+    fi;
+    
     $PIP_EXE install ipython
     $PIP_EXE install pandas
     # llvm & numba
